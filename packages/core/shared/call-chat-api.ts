@@ -20,7 +20,7 @@ export async function callChatApi({
   api: string;
   messages: Omit<Message, 'id'>[];
   body: Record<string, any>;
-  streamMode?: 'stream-data' | 'text';
+  streamMode?: 'stream-data' | 'text' | 'sse';
   credentials?: RequestCredentials;
   headers?: HeadersInit;
   abortController?: () => AbortController | null;
@@ -70,6 +70,48 @@ export async function callChatApi({
   const reader = response.body.getReader();
 
   switch (streamMode) {
+    case 'sse': {
+      {
+        const decoder = createChunkDecoder();
+        const resultMessage = {
+          id: generateId(),
+          createdAt: new Date(),
+          role: 'assistant' as const,
+          content: '',
+        };
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done)
+            break;
+          let deltas = decoder(value).split('\n');
+          for (const delta of deltas) {
+            if (delta === '')
+              continue;
+            const line = delta.replace(/^data:\s*/, '');
+            const j = JSON.parse(line);
+            const content_txt = j["choices"][0]["delta"]["content"];
+            if (!content_txt)
+              continue;
+            resultMessage.content += content_txt;
+            resultMessage.id = j["id"] || generateId();
+            onUpdate([{ ...resultMessage }], []);
+          }
+          // note: creating a new message object is required for Solid.js streaming
+          onUpdate([{ ...resultMessage }], []);
+
+          // The request has been aborted, stop reading the stream.
+          if (abortController?.() === null) {
+            reader.cancel();
+            break;
+          }
+        }
+        onFinish?.(resultMessage);
+        return {
+          messages: [resultMessage],
+          data: [],
+        };
+      }
+    }
     case 'text': {
       const decoder = createChunkDecoder();
 

@@ -361,7 +361,7 @@ either synchronously or asynchronously.
   sendExtraMessageFields?: boolean;
 
   /** Stream mode (default to "stream-data") */
-  streamMode?: 'stream-data' | 'text';
+  streamMode?: 'stream-data' | 'text' | 'sse';
 };
 
 export type UseCompletionOptions = {
