@@ -73,7 +73,7 @@ const getStreamedResponse = async (
   abortControllerRef: AbortController | null,
   generateId: IdGenerator,
   streamMode?: 'stream-data' | 'text' | 'sse',
-  onFinish?: (message: Message) => void,
+  onFinish?: (messages: Message[], message: Message) => void,
   onResponse?: (response: Response) => void | Promise<void>,
   sendExtraMessageFields?: boolean,
 ) => {

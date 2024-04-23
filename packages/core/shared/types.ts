@@ -314,7 +314,7 @@ either synchronously or asynchronously.
   /**
    * Callback function to be called when the chat is finished streaming.
    */
-  onFinish?: (message: Message) => void;
+  onFinish?: (messages: Message[], message: Message) => void;
 
   /**
    * Callback function to be called when an error is encountered.

@@ -175,11 +175,11 @@ export function useChat({
               mutate([...chatRequest.messages, ...merged]);
               streamData.value = [...existingData, ...(data ?? [])];
             },
-            onFinish(message) {
+            onFinish(messagesSnapshot, message) {
               // workaround: sometimes the last chunk is not shown in the UI.
               // push it twice to make sure it's displayed.
               mutate([...chatRequest.messages, message]);
-              onFinish?.(message);
+              onFinish?.(messagesSnapshot, message);
             },
             restoreMessagesOnFailure() {
               // Restore the previous messages if the request fails.

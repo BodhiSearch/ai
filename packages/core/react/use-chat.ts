@@ -93,7 +93,7 @@ const getStreamedResponse = async (
   abortControllerRef: React.MutableRefObject<AbortController | null>,
   generateId: IdGenerator,
   streamMode?: 'stream-data' | 'text' | 'sse',
-  onFinish?: (message: Message) => void,
+  onFinish?: (messages: Message[], message: Message) => void,
   onResponse?: (response: Response) => void | Promise<void>,
   onToolCall?: UseChatOptions['onToolCall'],
   sendExtraMessageFields?: boolean,
@@ -170,7 +170,7 @@ const getStreamedResponse = async (
     }
 
     if (onFinish) {
-      onFinish(responseMessage);
+      onFinish(chatRequest.messages, responseMessage);
     }
 
     return responseMessage;

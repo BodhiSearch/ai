@@ -27,7 +27,7 @@ export async function callChatApi({
   restoreMessagesOnFailure: () => void;
   onResponse?: (response: Response) => void | Promise<void>;
   onUpdate: (merged: Message[], data: JSONValue[] | undefined) => void;
-  onFinish?: (message: Message) => void;
+  onFinish?: (messages: Message[], message: Message) => void;
   onToolCall?: UseChatOptions['onToolCall'];
   generateId: IdGenerator;
 }) {
@@ -105,7 +105,7 @@ export async function callChatApi({
             break;
           }
         }
-        onFinish?.(resultMessage);
+        onFinish?.(messages as Message[], resultMessage);
         return {
           messages: [resultMessage],
           data: [],
@@ -141,7 +141,7 @@ export async function callChatApi({
         }
       }
 
-      onFinish?.(resultMessage);
+      onFinish?.(messages as Message[], resultMessage);
 
       return {
         messages: [resultMessage],
@@ -158,7 +158,7 @@ export async function callChatApi({
         onToolCall,
         onFinish(prefixMap) {
           if (onFinish && prefixMap.text != null) {
-            onFinish(prefixMap.text);
+            onFinish(messages as Message[], prefixMap.text);
           }
         },
         generateId,
